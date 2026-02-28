@@ -195,6 +195,9 @@ func makePotionActivationSpellInternal(potion Consumable, character *Character) 
 
 	for _, effectID := range potion.EffectIds {
 		e := SpellEffectsById[effectID]
+		if e == nil {
+			continue
+		}
 		resourceType := e.GetResourceType()
 		if e.Type == proto.EffectType_EffectTypeResourceGain && resourceType != 0 {
 			if resourceType == proto.ResourceType_ResourceTypeMana && mcd.Type != CooldownTypeSurvival {

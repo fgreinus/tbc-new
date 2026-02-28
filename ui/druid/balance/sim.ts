@@ -19,6 +19,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBalanceDruid, {
 	epStats: [
 		Stat.StatIntellect,
 		Stat.StatSpirit,
+		Stat.StatMana,
 		Stat.StatSpellDamage,
 		Stat.StatArcaneDamage,
 		Stat.StatNatureDamage,
