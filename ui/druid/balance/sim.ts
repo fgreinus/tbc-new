@@ -6,9 +6,7 @@ import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation, APLRotation_Type } from '../../core/proto/apl';
 import { Faction, ItemSlot, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
 import { DEFAULT_HYBRID_CASTER_GEM_STATS, UnitStat } from '../../core/proto_utils/stats';
-import { formatToNumber } from '../../core/utils';
 import * as DruidInputs from '../inputs';
-import * as BalanceInputs from './inputs';
 import * as Presets from './presets';
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecBalanceDruid, {
@@ -20,9 +18,10 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBalanceDruid, {
 	// All stats for which EP should be calculated.
 	epStats: [
 		Stat.StatIntellect,
+		Stat.StatSpirit,
 		Stat.StatSpellDamage,
-		Stat.StatNatureDamage,
 		Stat.StatArcaneDamage,
+		Stat.StatNatureDamage,
 		Stat.StatSpellHitRating,
 		Stat.StatSpellCritRating,
 		Stat.StatSpellHasteRating,
@@ -47,7 +46,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBalanceDruid, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.Phase1PresetGear.gear,
+		gear: Presets.PreraidPresetGear.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.StandardEPWeights.epWeights,
 		// Default consumes settings.
@@ -72,7 +71,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBalanceDruid, {
 	excludeBuffDebuffInputs: [],
 	// Inputs to include in the 'Other' section on the settings tab.
 	otherInputs: {
-		inputs: [BalanceInputs.OkfUptime, OtherInputs.TankAssignment, OtherInputs.InputDelay, OtherInputs.DistanceFromTarget],
+		inputs: [OtherInputs.TankAssignment, OtherInputs.InputDelay, OtherInputs.DistanceFromTarget],
 	},
 	itemSwapSlots: [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand, ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2],
 	encounterPicker: {
@@ -86,8 +85,8 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBalanceDruid, {
 		talents: [Presets.StandardTalents],
 		rotations: [Presets.StandardRotation],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PreraidPresetGear, Presets.Phase1PresetGear],
-		builds: [Presets.PresetPreraidBuild, Presets.Phase1PresetBuild],
+		gear: [Presets.PreraidPresetGear],
+		builds: [Presets.PresetPreraidBuild],
 	},
 
 	autoRotation: (_player: Player<Spec.SpecBalanceDruid>): APLRotation => {
@@ -103,8 +102,8 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBalanceDruid, {
 			otherDefaults: Presets.OtherDefaults,
 			defaultFactionRaces: {
 				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceTauren,
-				[Faction.Horde]: Race.RaceTroll,
+				[Faction.Alliance]: Race.RaceNightElf,
+				[Faction.Horde]: Race.RaceTauren,
 			},
 			defaultGear: {
 				[Faction.Unknown]: {},

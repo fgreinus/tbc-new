@@ -1,7 +1,40 @@
 {
 	"type": "TypeAPL",
-	"prepullActions": [],
-	"priorityList": [],
-	"groups": [],
-	"valueVariables": []
+	"priorityList": [
+		{ "action": { "groupReference": { "groupName": "DoTs" } } },
+		{ "action": { "groupReference": { "groupName": "Cooldowns" } } },
+		{ "action": { "groupReference": { "groupName": "Main Rotation" } } }
+	],
+	"groups": [
+		{
+			"name": "DoTs",
+			"actions": [
+				{
+					"action": {
+						"condition": {
+							"cmp": {
+								"op": "OpLe",
+								"lhs": { "auraRemainingTime": { "sourceUnit": { "type": "CurrentTarget" }, "auraId": { "spellId": 26993 } } },
+								"rhs": { "const": { "val": "3s" } }
+							}
+						},
+						"castSpell": { "spellId": { "spellId": 26993 } }
+					}
+				},
+				{
+					"action": {
+						"condition": { "not": { "val": { "dotIsActive": { "spellId": { "spellId": 26988 } } } } },
+						"castSpell": { "spellId": { "spellId": 26988 } }
+					}
+				}
+			]
+		},
+		{
+			"name": "Cooldowns",
+			"actions": [
+				{ "action": { "condition": { "spellIsReady": { "spellId": { "spellId": 33831 } } }, "castSpell": { "spellId": { "spellId": 33831 } } } }
+			]
+		},
+		{ "name": "Main Rotation", "actions": [{ "action": { "castSpell": { "spellId": { "spellId": 26986 } } } }] }
+	]
 }

@@ -8,40 +8,49 @@ import (
 )
 
 const (
-	StarfireBonusCoeff = 2.166
-	StarfireCoeff      = 4.456
-	StarfireVariance   = 0.25
+	StarfireBonusCoeff = 1
+	StarfireR8MinDmg   = 550
+	StarfireR8MaxDmg   = 647
+
+	IvoryMoongoddess int32 = 27518
 )
 
 func (moonkin *BalanceDruid) registerStarfireSpell() {
-	moonkin.Starfire = moonkin.RegisterSpell(druid.Humanoid|druid.Moonkin, core.SpellConfig{
-		ActionID:       core.ActionID{SpellID: 2912},
+	bonusSpellDamage := 0.0
+	if moonkin.Druid.Equipment.Ranged().ID == IvoryMoongoddess {
+		bonusSpellDamage = 55
+	}
+
+	moonkin.StarfireR8 = moonkin.RegisterSpell(druid.Humanoid|druid.Moonkin, core.SpellConfig{
+		ActionID:       core.ActionID{SpellID: 26986},
 		SpellSchool:    core.SpellSchoolArcane,
 		ProcMask:       core.ProcMaskSpellDamage,
 		ClassSpellMask: druid.DruidSpellStarfire,
 		Flags:          core.SpellFlagAPL,
 
 		ManaCost: core.ManaCostOptions{
-			BaseCostPercent: 15.5,
+			FlatCost: 370,
 		},
 
 		Cast: core.CastConfig{
 			DefaultCast: core.Cast{
 				GCD:      core.GCDDefault,
-				CastTime: time.Millisecond * 2700,
+				CastTime: time.Millisecond * 3500,
 			},
 		},
 
 		BonusCoefficient: StarfireBonusCoeff,
 
+		BonusSpellDamage: bonusSpellDamage,
+
 		DamageMultiplier: 1,
 
-		CritMultiplier: moonkin.DefaultCritMultiplier(),
+		CritMultiplier: moonkin.DefaultSpellCritMultiplier(),
 
 		ThreatMultiplier: 1,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			baseDamage := moonkin.CalcAndRollDamageRange(sim, StarfireCoeff, StarfireVariance)
+			baseDamage := moonkin.CalcAndRollDamageRange(sim, StarfireR8MinDmg, StarfireR8MaxDmg)
 			spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
 		},
 	})

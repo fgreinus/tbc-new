@@ -276,12 +276,10 @@ func (druid *Druid) RegisterMoonkinFormAura() {
 			druid.form = Humanoid
 		},
 	}).AttachStatDependency(
-		druid.NewDynamicMultiplyStat(stats.Armor, 0.6),
-	).AttachSpellMod(core.SpellModConfig{
-		Kind:       core.SpellMod_DamageDone_Pct,
-		FloatValue: 0.35,
-		School:     core.SpellSchoolArcane | core.SpellSchoolNature,
-	})
+		druid.NewDynamicMultiplyStat(stats.BonusArmor, 4),
+	).AttachStatDependency(
+		druid.NewDynamicMultiplyStat(stats.AttackPower, 1.5),
+	)
 }
 
 func (druid *Druid) RegisterMoonkinFormSpell() {
@@ -290,7 +288,7 @@ func (druid *Druid) RegisterMoonkinFormSpell() {
 		Flags:    core.SpellFlagNoOnCastComplete | core.SpellFlagAPL,
 
 		ManaCost: core.ManaCostOptions{
-			BaseCostPercent: 9.3,
+			BaseCostPercent: 22,
 		},
 		Cast: core.CastConfig{
 			DefaultCast: core.Cast{

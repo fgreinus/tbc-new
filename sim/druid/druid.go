@@ -16,8 +16,6 @@ type Druid struct {
 
 	StartingForm DruidForm
 
-	Treants TreantAgents
-
 	BleedsActive      map[*core.Unit]int32
 	AssumeBleedActive bool
 	CannotShredTarget bool
@@ -222,12 +220,12 @@ func (druid *Druid) Initialize() {
 }
 
 func (druid *Druid) RegisterBaselineSpells() {
-	// druid.registerMoonfireSpell()
+	druid.registerMoonfireSpell()
 	// druid.registerWrathSpell()
 	// druid.registerHealingTouchSpell()
 	// druid.registerHurricaneSpell()
 	// druid.registerNaturesSwiftness()
-	// druid.registerFaerieFireSpell()
+	druid.registerFaerieFireSpell()
 	// druid.registerTranquilityCD()
 	// druid.registerRejuvenationSpell()
 

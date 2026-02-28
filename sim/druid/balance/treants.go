@@ -1,10 +1,23 @@
-package druid
+package balance
 
 import (
 	"time"
 
 	"github.com/wowsims/tbc/sim/core"
 )
+
+// Testing results
+// 30 sek mit full gear
+// (799 spelldmg, 799 nature, 79 str, 81 agi, 316 sta, 339 int, 160 spirit, 120 spellhit (9,51%), 15,06% spellcrit)
+// 51 hits, average normal 187, 203 dps, 5,9% crit, min:132, max:214, crit-min:358, crit-max:374
+
+// 30sek ohne spelldmg trinket
+// 756 spell, 756 nature, 79 str, 81 agi, 316 sta, 339 int,
+// 51 hits, average normal 184, dps 188, 7,8% crit
+
+// noch weniger gear
+// 464 spelldmg, 295 int,
+// 50 hits, average normal 163, avg dps 129, min 123, max 185, 12% crit?!
 
 // Extension of PetAgent interface, for treants.
 type TreantAgent interface {
@@ -34,7 +47,7 @@ func (treant *DefaultTreantImpl) GetPet() *core.Pet {
 }
 
 func (treant *DefaultTreantImpl) Enable(sim *core.Simulation) {
-	treant.EnableWithTimeout(sim, treant, time.Second*15)
+	treant.EnableWithTimeout(sim, treant, time.Second*30)
 }
 
 type TreantConfig struct {
@@ -43,14 +56,13 @@ type TreantConfig struct {
 	WeaponDamageCoefficient  float64
 }
 
-func (druid *Druid) NewDefaultTreant(config TreantConfig) *DefaultTreantImpl {
+func (balance *BalanceDruid) NewDefaultTreant(config TreantConfig) *DefaultTreantImpl {
 	treant := &DefaultTreantImpl{
 		Pet: core.NewPet(core.PetConfig{
 			Name:                     "Treant",
-			Owner:                    &druid.Character,
+			Owner:                    &balance.Character,
 			NonHitExpStatInheritance: config.NonHitExpStatInheritance,
-			// HasDynamicMeleeSpeedInheritance: true,
-			// HasDynamicCastSpeedInheritance:  true,
+			EnabledOnStart:           false,
 		}),
 	}
 
@@ -66,7 +78,7 @@ func (druid *Druid) NewDefaultTreant(config TreantConfig) *DefaultTreantImpl {
 			BaseDamageMax:        baseWeaponDamage,
 			SwingSpeed:           2,
 			NormalizedSwingSpeed: 2,
-			CritMultiplier:       druid.DefaultMeleeCritMultiplier(),
+			CritMultiplier:       balance.DefaultMeleeCritMultiplier(),
 			SpellSchool:          core.SpellSchoolPhysical,
 		},
 

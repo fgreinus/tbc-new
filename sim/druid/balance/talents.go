@@ -1,126 +1,199 @@
 package balance
 
-// import (
-// 	"time"
+import (
+	"time"
 
-// 	"github.com/wowsims/tbc/sim/core"
-// 	"github.com/wowsims/tbc/sim/druid"
-// )
+	"github.com/wowsims/tbc/sim/core"
+	"github.com/wowsims/tbc/sim/core/stats"
+	"github.com/wowsims/tbc/sim/druid"
+)
 
-// func (moonkin *BalanceDruid) ApplyBalanceTalents() {
-// 	moonkin.registerIncarnation()
-// 	moonkin.registerDreamOfCenarius()
-// 	moonkin.registerSoulOfTheForest()
-// }
+func (moonkin *BalanceDruid) ApplyBalanceTalents() {
+	moonkin.registerStarlightWrath()
+	moonkin.registerFocusedStarlight()
+	moonkin.registerImprovedMoonfire()
+	moonkin.registerVengenace()
+	moonkin.registerNaturesGrace()
+	moonkin.registerLunarGuidance()
+	moonkin.registerMoonglow()
+	moonkin.registerBalanceOfPower()
+	moonkin.registerDreamstate()
+	moonkin.registerWrathOfCenarius()
+}
 
-// func (moonkin *BalanceDruid) registerIncarnation() {
-// 	if !moonkin.Talents.Incarnation {
-// 		return
-// 	}
+func (moonkin *BalanceDruid) registerStarlightWrath() {
+	if moonkin.Talents.StarlightWrath == 0 {
+		return
+	}
 
-// 	actionID := core.ActionID{SpellID: 102560}
+	moonkin.AddStaticMod(core.SpellModConfig{
+		ClassMask: druid.DruidSpellStarfire,
+		TimeValue: time.Millisecond * time.Duration(-100*float64(moonkin.Talents.StarlightWrath)),
+		Kind:      core.SpellMod_CastTime_Flat,
+	})
+	moonkin.AddStaticMod(core.SpellModConfig{
+		ClassMask: druid.DruidSpellWrath,
+		TimeValue: time.Millisecond * time.Duration(-100*float64(moonkin.Talents.StarlightWrath)),
+		Kind:      core.SpellMod_CastTime_Flat,
+	})
+}
 
-// 	moonkin.IncarnationSpellMod = moonkin.AddDynamicMod(core.SpellModConfig{
-// 		School:     core.SpellSchoolArcane | core.SpellSchoolNature,
-// 		Kind:       core.SpellMod_DamageDone_Pct,
-// 		FloatValue: 0.25,
-// 	})
+func (moonkin *BalanceDruid) registerFocusedStarlight() {
+	if moonkin.Talents.FocusedStarlight == 0 {
+		return
+	}
 
-// 	incarnationAura := moonkin.RegisterAura(core.Aura{
-// 		Label:    "Incarnation: Chosen of Elune",
-// 		ActionID: actionID,
-// 		Duration: time.Second * 30,
-// 		OnGain: func(_ *core.Aura, _ *core.Simulation) {
-// 			// Only apply the damage bonus when in Eclipse or during Celestial Alignment
-// 			if moonkin.IsInEclipse() || moonkin.CelestialAlignment.RelatedSelfBuff.IsActive() {
-// 				moonkin.IncarnationSpellMod.Activate()
-// 			}
-// 		},
-// 		OnExpire: func(_ *core.Aura, _ *core.Simulation) {
-// 			moonkin.IncarnationSpellMod.Deactivate()
-// 		},
-// 	})
+	moonkin.AddStaticMod(core.SpellModConfig{
+		ClassMask:  druid.DruidSpellStarfire,
+		FloatValue: 0.02 * float64(moonkin.Talents.FocusedStarlight),
+		Kind:       core.SpellMod_BonusCrit_Percent,
+	})
+	moonkin.AddStaticMod(core.SpellModConfig{
+		ClassMask:  druid.DruidSpellWrath,
+		FloatValue: 0.02 * float64(moonkin.Talents.FocusedStarlight),
+		Kind:       core.SpellMod_BonusCrit_Percent,
+	})
+}
 
-// 	// Add Eclipse callback to apply/remove damage bonus when entering/exiting Eclipse
-// 	moonkin.AddEclipseCallback(func(_ Eclipse, gained bool, _ *core.Simulation) {
-// 		if incarnationAura.IsActive() {
-// 			if gained {
-// 				moonkin.IncarnationSpellMod.Activate()
-// 			} else {
-// 				moonkin.IncarnationSpellMod.Deactivate()
-// 			}
-// 		}
-// 	})
+func (moonkin *BalanceDruid) registerImprovedMoonfire() {
+	if moonkin.Talents.ImprovedMoonfire == 0 {
+		return
+	}
 
-// 	moonkin.ChosenOfElune = moonkin.RegisterSpell(druid.Humanoid|druid.Moonkin, core.SpellConfig{
-// 		ActionID:        actionID,
-// 		Flags:           core.SpellFlagAPL,
-// 		RelatedSelfBuff: incarnationAura,
+	moonkin.AddStaticMod(core.SpellModConfig{
+		ClassMask:  druid.DruidSpellMoonfire,
+		FloatValue: 0.05 * float64(moonkin.Talents.ImprovedMoonfire),
+		Kind:       core.SpellMod_DamageDone_Pct,
+	})
+	moonkin.AddStaticMod(core.SpellModConfig{
+		ClassMask:  druid.DruidSpellMoonfire,
+		FloatValue: 0.05 * float64(moonkin.Talents.ImprovedMoonfire),
+		Kind:       core.SpellMod_BonusCrit_Percent,
+	})
+	moonkin.AddStaticMod(core.SpellModConfig{
+		ClassMask:  druid.DruidSpellMoonfireDoT,
+		FloatValue: 0.05 * float64(moonkin.Talents.ImprovedMoonfire),
+		Kind:       core.SpellMod_DamageDone_Pct,
+	})
+}
 
-// 		Cast: core.CastConfig{
-// 			DefaultCast: core.Cast{
-// 				GCD: core.GCDDefault,
-// 			},
-// 			CD: core.Cooldown{
-// 				Timer:    moonkin.NewTimer(),
-// 				Duration: time.Minute * 3,
-// 			},
-// 		},
+func (moonkin *BalanceDruid) registerVengenace() {
+	if moonkin.Talents.Vengeance == 0 {
+		return
+	}
 
-// 		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
-// 			spell.RelatedSelfBuff.Activate(sim)
-// 		},
-// 	})
+	moonkin.AddStaticMod(core.SpellModConfig{
+		ClassMask:  druid.DruidSpellStarfire,
+		FloatValue: 0.20 * float64(moonkin.Talents.Vengeance),
+		Kind:       core.SpellMod_CritMultiplier_Flat,
+	})
+	moonkin.AddStaticMod(core.SpellModConfig{
+		ClassMask:  druid.DruidSpellWrath,
+		FloatValue: 0.20 * float64(moonkin.Talents.Vengeance),
+		Kind:       core.SpellMod_CritMultiplier_Flat,
+	})
+	moonkin.AddStaticMod(core.SpellModConfig{
+		ClassMask:  druid.DruidSpellMoonfire,
+		FloatValue: 0.20 * float64(moonkin.Talents.Vengeance),
+		Kind:       core.SpellMod_CritMultiplier_Flat,
+	})
+}
 
-// 	moonkin.AddMajorCooldown(core.MajorCooldown{
-// 		Spell: moonkin.ChosenOfElune.Spell,
-// 		Type:  core.CooldownTypeDPS,
-// 	})
-// }
+func (moonkin *BalanceDruid) registerNaturesGrace() {
+	// TODO
+}
 
-// func (moonkin *BalanceDruid) registerDreamOfCenarius() {
-// 	if !moonkin.Talents.DreamOfCenarius {
-// 		return
-// 	}
+func (moonkin *BalanceDruid) registerLunarGuidance() {
+	if moonkin.Talents.LunarGuidance == 0 {
+		return
+	}
 
-// 	moonkin.DreamOfCenarius = moonkin.RegisterAura(core.Aura{
-// 		Label:    "Dream of Cenarius",
-// 		ActionID: core.ActionID{SpellID: 145151},
-// 		Duration: time.Second * 30,
-// 	})
+	moonkin.AddStatDependency(stats.Intellect, stats.SpellDamage, 0.08*float64(moonkin.Talents.LunarGuidance))
+	moonkin.AddStatDependency(stats.Intellect, stats.HealingPower, 0.08*float64(moonkin.Talents.LunarGuidance))
+}
 
-// 	moonkin.MakeProcTriggerAura(core.ProcTrigger{
-// 		Name:               "Dream of Cenarius Trigger",
-// 		Callback:           core.CallbackOnCastComplete,
-// 		ClassSpellMask:     druid.DruidSpellHealingTouch,
-// 		TriggerImmediately: true,
+func (moonkin *BalanceDruid) registerMoonglow() {
+	if moonkin.Talents.Moonglow == 0 {
+		return
+	}
 
-// 		Handler: func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
-// 			moonkin.DreamOfCenarius.Activate(sim)
-// 		},
-// 	})
-// }
+	moonkin.AddStaticMod(core.SpellModConfig{
+		ClassMask:  druid.DruidSpellStarfire,
+		FloatValue: -0.03 * float64(moonkin.Talents.Moonglow),
+		Kind:       core.SpellMod_PowerCost_Pct,
+	})
+	moonkin.AddStaticMod(core.SpellModConfig{
+		ClassMask:  druid.DruidSpellWrath,
+		FloatValue: -0.03 * float64(moonkin.Talents.Moonglow),
+		Kind:       core.SpellMod_PowerCost_Pct,
+	})
+	moonkin.AddStaticMod(core.SpellModConfig{
+		ClassMask:  druid.DruidSpellMoonfire,
+		FloatValue: -0.03 * float64(moonkin.Talents.Moonglow),
+		Kind:       core.SpellMod_PowerCost_Pct,
+	})
+}
 
-// func (moonkin *BalanceDruid) registerSoulOfTheForest() {
-// 	if !moonkin.Talents.SoulOfTheForest {
-// 		return
-// 	}
+func (moonkin *BalanceDruid) registerMoonfury() {
+	if moonkin.Talents.Moonfury == 0 {
+		return
+	}
 
-// 	moonkin.AstralInsight = moonkin.RegisterAura(core.Aura{
-// 		Label:    "Astral Insight (SotF)",
-// 		ActionID: core.ActionID{SpellID: 145138},
-// 		Duration: time.Second * 30,
-// 	})
+	moonkin.AddStaticMod(core.SpellModConfig{
+		ClassMask:  druid.DruidSpellStarfire,
+		FloatValue: 0.02 * float64(moonkin.Talents.Moonfury),
+		Kind:       core.SpellMod_DamageDone_Pct,
+	})
+	moonkin.AddStaticMod(core.SpellModConfig{
+		ClassMask:  druid.DruidSpellMoonfire,
+		FloatValue: 0.02 * float64(moonkin.Talents.Moonfury),
+		Kind:       core.SpellMod_DamageDone_Pct,
+	})
+	moonkin.AddStaticMod(core.SpellModConfig{
+		ClassMask:  druid.DruidSpellMoonfireDoT,
+		FloatValue: 0.02 * float64(moonkin.Talents.Moonfury),
+		Kind:       core.SpellMod_DamageDone_Pct,
+	})
+	moonkin.AddStaticMod(core.SpellModConfig{
+		ClassMask:  druid.DruidSpellWrath,
+		FloatValue: 0.02 * float64(moonkin.Talents.Moonfury),
+		Kind:       core.SpellMod_DamageDone_Pct,
+	})
+}
 
-// 	moonkin.MakeProcTriggerAura(core.ProcTrigger{
-// 		Name:               "Astral Insight (SotF) Trigger",
-// 		Callback:           core.CallbackOnCastComplete,
-// 		ClassSpellMask:     druid.DruidSpellWrath | druid.DruidSpellStarfire | druid.DruidSpellStarsurge,
-// 		ProcChance:         0.08,
-// 		TriggerImmediately: true,
+func (moonkin *BalanceDruid) registerBalanceOfPower() {
+	if moonkin.Talents.BalanceOfPower == 0 {
+		return
+	}
 
-// 		Handler: func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
-// 			moonkin.AstralInsight.Activate(sim)
-// 		},
-// 	})
-// }
+	moonkin.AddStaticMod(core.SpellModConfig{
+		ClassMask:  druid.DruidDamagingSpells,
+		FloatValue: 2 * float64(moonkin.Talents.BalanceOfPower),
+		Kind:       core.SpellMod_BonusHit_Percent,
+	})
+}
+
+func (moonkin *BalanceDruid) registerDreamstate() {
+	if moonkin.Talents.Dreamstate == 0 {
+		return
+	}
+
+	moonkin.AddStatDependency(stats.Intellect, stats.MP5, float64(moonkin.Talents.Dreamstate)*0.04)
+}
+
+func (moonkin *BalanceDruid) registerWrathOfCenarius() {
+	if moonkin.Talents.WrathOfCenarius == 0 {
+		return
+	}
+
+	moonkin.AddStaticMod(core.SpellModConfig{
+		ClassMask:  druid.DruidSpellStarfire,
+		FloatValue: 0.04 * float64(moonkin.Talents.BalanceOfPower),
+		Kind:       core.SpellMod_BonusCoeffecient_Flat,
+	})
+	moonkin.AddStaticMod(core.SpellModConfig{
+		ClassMask:  druid.DruidSpellWrath,
+		FloatValue: 0.02 * float64(moonkin.Talents.BalanceOfPower),
+		Kind:       core.SpellMod_BonusCoeffecient_Flat,
+	})
+}

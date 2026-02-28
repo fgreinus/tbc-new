@@ -79,6 +79,8 @@ message DruidTalents {
 
 message DruidOptions {
 	UnitReference innervate_target = 1;
+  bool faerie_fire = 2;
+  bool insect_swarm = 3;
 }
 
 message BalanceDruid {
@@ -86,7 +88,6 @@ message BalanceDruid {
 
   message Options {
     DruidOptions class_options = 1;
-	float okf_uptime = 2;
   }
   Options options = 3;
 }
