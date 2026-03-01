@@ -168,6 +168,7 @@ export class Database {
 		db.itemIcons.forEach(data => (this.itemIcons[data.id] = data));
 		db.spellIcons.forEach(data => (this.spellIcons[data.id] = data));
 		db.consumables.forEach(consumable => this.consumables.set(consumable.id, consumable));
+		db.spellEffects.forEach(effect => this.spellEffects.set(effect.id, effect));
 	}
 
 	getAllItems(): Array<Item> {
