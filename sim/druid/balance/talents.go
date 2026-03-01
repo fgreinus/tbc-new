@@ -232,7 +232,8 @@ func (moonkin *BalanceDruid) registerDreamstate() {
 		return
 	}
 
-	moonkin.AddStatDependency(stats.Intellect, stats.MP5, float64(moonkin.Talents.Dreamstate)*0.04)
+	conversions := []float64{0.04, 0.07, 0.10}
+	moonkin.AddStatDependency(stats.Intellect, stats.MP5, conversions[moonkin.Talents.Dreamstate-1])
 }
 
 func (moonkin *BalanceDruid) registerWrathOfCenarius() {
