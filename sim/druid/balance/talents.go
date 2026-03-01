@@ -19,6 +19,7 @@ func (moonkin *BalanceDruid) ApplyBalanceTalents() {
 	moonkin.registerBalanceOfPower()
 	moonkin.registerDreamstate()
 	moonkin.registerWrathOfCenarius()
+	moonkin.registerMoonfury()
 }
 
 func (moonkin *BalanceDruid) registerStarlightWrath() {
@@ -100,7 +101,60 @@ func (moonkin *BalanceDruid) registerVengenace() {
 }
 
 func (moonkin *BalanceDruid) registerNaturesGrace() {
-	// TODO
+	if !moonkin.Talents.NaturesGrace {
+		return
+	}
+
+	var proccedAt time.Duration
+	var proccedSpell *core.Spell
+
+	naturesGraceMod := moonkin.AddDynamicMod(core.SpellModConfig{
+		ClassMask: druid.DruidSpellStarfire | druid.DruidSpellWrath,
+		TimeValue: -500 * time.Millisecond,
+		Kind:      core.SpellMod_CastTime_Flat,
+	})
+	naturesGraceMod.Deactivate()
+
+	moonkin.NaturesGraceProcAura = moonkin.RegisterAura(core.Aura{
+		Label:    "Natures Grace Proc",
+		ActionID: core.ActionID{SpellID: 16886},
+		Duration: core.NeverExpires,
+		OnCastComplete: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell) {
+			if !moonkin.Wrath.IsEqual(spell) && !moonkin.StarfireR8.IsEqual(spell) && !moonkin.StarfireR6.IsEqual(spell) {
+				return
+			}
+
+			if proccedAt == sim.CurrentTime && proccedSpell == spell {
+				// Means this is another hit from the same cast that procced Nature's Grace.
+				return
+			}
+
+			aura.Deactivate(sim)
+		},
+		OnGain: func(aura *core.Aura, sim *core.Simulation) {
+			naturesGraceMod.Activate()
+		},
+		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
+			naturesGraceMod.Deactivate()
+		},
+	})
+
+	moonkin.RegisterAura(core.Aura{
+		Label: "Natures Grace",
+		// Commented out actionID so it does not show in the sim
+		// ActionID: core.ActionID{SpellID: 16880},
+		Duration: core.NeverExpires,
+		OnReset: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Activate(sim)
+		},
+		OnSpellHitDealt: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell, spellResult *core.SpellResult) {
+			if spellResult.Outcome.Matches(core.OutcomeCrit) {
+				proccedAt = sim.CurrentTime
+				proccedSpell = spell
+				moonkin.NaturesGraceProcAura.Activate(sim)
+			}
+		},
+	})
 }
 
 func (moonkin *BalanceDruid) registerLunarGuidance() {

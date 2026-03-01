@@ -59,10 +59,14 @@ type TreantConfig struct {
 func (balance *BalanceDruid) NewDefaultTreant(config TreantConfig) *DefaultTreantImpl {
 	treant := &DefaultTreantImpl{
 		Pet: core.NewPet(core.PetConfig{
-			Name:                     "Treant",
-			Owner:                    &balance.Character,
-			NonHitExpStatInheritance: config.NonHitExpStatInheritance,
-			EnabledOnStart:           false,
+			Name:                            "Treant",
+			Owner:                           &balance.Character,
+			NonHitExpStatInheritance:        config.NonHitExpStatInheritance,
+			EnabledOnStart:                  false,
+			IsGuardian:                      true,
+			HasDynamicMeleeSpeedInheritance: false,
+			HasDynamicCastSpeedInheritance:  false,
+			HasResourceRegenInheritance:     false,
 		}),
 	}
 

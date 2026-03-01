@@ -55,8 +55,9 @@ type BalanceDruid struct {
 	StarfireR8 *druid.DruidSpell
 	StarfireR6 *druid.DruidSpell
 
-	ForceOfNature *druid.DruidSpell
-	Treants       TreantAgents
+	ForceOfNature        *druid.DruidSpell
+	NaturesGraceProcAura *core.Aura
+	Treants              TreantAgents
 }
 
 func (moonkin *BalanceDruid) GetDruid() *druid.Druid {
