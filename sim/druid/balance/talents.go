@@ -162,8 +162,9 @@ func (moonkin *BalanceDruid) registerLunarGuidance() {
 		return
 	}
 
-	moonkin.AddStatDependency(stats.Intellect, stats.SpellDamage, 0.08*float64(moonkin.Talents.LunarGuidance))
-	moonkin.AddStatDependency(stats.Intellect, stats.HealingPower, 0.08*float64(moonkin.Talents.LunarGuidance))
+	conversions := []float64{0.08, 0.16, 0.25}
+	moonkin.AddStatDependency(stats.Intellect, stats.SpellDamage, conversions[moonkin.Talents.LunarGuidance-1])
+	moonkin.AddStatDependency(stats.Intellect, stats.HealingPower, conversions[moonkin.Talents.LunarGuidance-1])
 }
 
 func (moonkin *BalanceDruid) registerMoonglow() {
