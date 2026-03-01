@@ -40,7 +40,6 @@ func NewBalanceDruid(character *core.Character, options *proto.Player) *BalanceD
 		moonkin.SelfBuffs.InnervateTarget = balanceOptions.Options.ClassOptions.InnervateTarget
 	}
 
-	moonkin.EnableManaBar()
 	moonkin.RegisterMoonkinFormAura()
 
 	return moonkin
