@@ -1,11 +1,18 @@
 {
 	"type": "TypeAPL",
 	"priorityList": [
-		{ "action": { "groupReference": { "groupName": "DoTs" } } },
 		{ "action": { "groupReference": { "groupName": "Cooldowns" } } },
+		{ "action": { "groupReference": { "groupName": "DoTs" } } },
 		{ "action": { "groupReference": { "groupName": "Main Rotation" } } }
 	],
 	"groups": [
+		{
+			"name": "Cooldowns",
+			"actions": [
+				{ "action": { "autocastOtherCooldowns": {} } },
+				{ "action": { "condition": { "spellIsReady": { "spellId": { "spellId": 33831 } } }, "castSpell": { "spellId": { "spellId": 33831 } } } }
+			]
+		},
 		{
 			"name": "DoTs",
 			"actions": [
@@ -27,12 +34,6 @@
 						"castSpell": { "spellId": { "spellId": 26988 } }
 					}
 				}
-			]
-		},
-		{
-			"name": "Cooldowns",
-			"actions": [
-				{ "action": { "condition": { "spellIsReady": { "spellId": { "spellId": 33831 } } }, "castSpell": { "spellId": { "spellId": 33831 } } } }
 			]
 		},
 		{ "name": "Main Rotation", "actions": [{ "action": { "castSpell": { "spellId": { "spellId": 26986 } } } }] }
